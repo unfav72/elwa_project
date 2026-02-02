@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Milk Distribution System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #f5f5f5;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            background: #f5f5f5;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            background: #e0e0e0;
+        }
+        
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.5s;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-success {
+            background: #28a745;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .shift-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .shift-btn {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .shift-btn.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .message-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        
+        .message-box h3 {
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+        
+        .stat-card p {
+            opacity: 0.9;
+        }
+        
+        .action-btns {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .action-btns button {
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+        
+        .search-box {
+            margin-bottom: 20px;
+        }
+        
+        .search-box input {
+            width: 300px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🥛 Milk Distribution System</h1>
+            <p>பால் விநியோக மேலாண்மை அமைப்பு</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('entry')">Entry / பதிவு</button>
+            <button class="tab" onclick="showTab('records')">Records / பதிவுகள்</button>
+            <button class="tab" onclick="showTab('reports')">Reports / அறிக்கைகள்</button>
+            <button class="tab" onclick="showTab('attendance')">Attendance / வருகை</button>
+        </div>
+        
+        <div id="entry" class="tab-content active">
+            <h2>New Entry / புதிய பதிவு</h2>
+            
+            <div id="entryMessage"></div>
+            
+            <div class="shift-selector">
+                <button class="shift-btn active" onclick="selectShift('morning')">
+                    🌅 Morning Shift<br>காலை ஷிப்ட்
+                </button>
+                <button class="shift-btn" onclick="selectShift('evening')">
+                    🌆 Evening Shift<br>மாலை ஷிப்ட்
+                </button>
+            </div>
+            
+            <form id="entryForm">
+                <div class="form-group">
+                    <label>Name / பெயர்:</label>
+                    <input type="text" id="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Phone Number / தொலைபேசி எண்:</label>
+                    <input type="tel" id="phone" pattern="[0-9]{10}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Milk Quantity (ml) / பால் அளவு (மில்லி):</label>
+                    <input type="number" id="quantity" min="0" step="100" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Amount (₹) / தொகை:</label>
+                    <input type="number" id="amount" min="0" step="0.01" required>
+                </div>
+                
+                <button type="submit" class="btn" id="submitBtn">Submit / சமர்ப்பிக்கவும்</button>
+            </form>
+        </div>
+        
+        <div id="records" class="tab-content">
+            <h2>Distribution Records / விநியோக பதிவுகள்</h2>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search by name or phone / பெயர் அல்லது தொலைபேசி எண் மூலம் தேடுங்கள்" onkeyup="searchRecords()">
+            </div>
+            
+            <div class="shift-selector">
+                <button class="shift-btn active" onclick="filterShift('all')">All / அனைத்தும்</button>
+                <button class="shift-btn" onclick="filterShift('morning')">Morning / காலை</button>
+                <button class="shift-btn" onclick="filterShift('evening')">Evening / மாலை</button>
+            </div>
+            
+            <div id="recordsLoading" class="loading"></div>
+            
+            <table id="recordsTable" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>Date/தேதி</th>
+                        <th>Shift/ஷிப்ட்</th>
+                        <th>Name/பெயர்</th>
+                        <th>Phone/தொலைபேசி</th>
+                        <th>Quantity(ml)/அளவு</th>
+                        <th>Amount(₹)/தொகை</th>
+                        <th>Actions/செயல்கள்</th>
+                    </tr>
+                </thead>
+                <tbody id="recordsBody"></tbody>
+            </table>
+        </div>
+        
+        <div id="reports" class="tab-content">
+            <h2>Reports & Summary / அறிக்கைகள் & சுருக்கம்</h2>
+            
+            <div class="stats" id="statsContainer"></div>
+            
+            <div class="form-group">
+                <label>Select Date Range / தேதி வரம்பை தேர்ந்தெடுக்கவும்:</label>
+                <input type="date" id="startDate">
+                <input type="date" id="endDate" style="margin-top: 10px;">
+            </div>
+            
+            <button class="btn" onclick="generateReport()">Generate Report / அறிக்கை உருவாக்கு</button>
+            <button class="btn btn-success" onclick="downloadCSV()">Download CSV / CSV பதிவிறக்கம்</button>
+        </div>
+        
+        <div id="attendance" class="tab-content">
+            <h2>Attendance Tracking / வருகை கண்காணிப்பு</h2>
+            
+            <div class="form-group">
+                <label>Select Customer / வாடிக்கையாளரை தேர்ந்தெடுக்கவும்:</label>
+                <select id="customerSelect" onchange="showCustomerAttendance()">
+                    <option value="">-- Select --</option>
+                </select>
+            </div>
+            
+            <div id="attendanceDetails"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        let currentShift = 'morning';
+        let allRecords = [];
+        let filterShiftType = 'all';
+
+        // Fetch all records
+        async function fetchRecords() {
+            try {
+                const response = await fetch(`${API_URL}/records`);
+                if (!response.ok) throw new Error('Failed to fetch records');
+                allRecords = await response.json();
+                return allRecords;
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Failed to load records. Make sure the server is running.');
+                return [];
+            }
+        }
+
+        // Show tab
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'records') {
+                loadRecords();
+            } else if (tabName === 'reports') {
+                loadStats();
+            } else if (tabName === 'attendance') {
+                loadCustomers();
+            }
+        }
+
+        // Select shift
+        function selectShift(shift) {
+            currentShift = shift;
+            document.querySelectorAll('#entry .shift-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Filter by shift
+        function filterShift(shift) {
+            filterShiftType = shift;
+            document.querySelectorAll('#records .shift-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            displayRecords();
+        }
+
+        // Submit form
+        document.getElementById('entryForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Saving...';
+            
+            const record = {
+                shift: currentShift,
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                quantity: parseFloat(document.getElementById('quantity').value),
+                amount: parseFloat(document.getElementById('amount').value)
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/records`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(record)
+                });
+                
+                if (!response.ok) throw new Error('Failed to save record');
+                
+                const savedRecord = await response.json();
+                
+                // Show message
+                await showMessage(savedRecord.id);
+                
+                // Reset form
+                this.reset();
+                
+                showSuccess('Entry saved successfully! / பதிவு வெற்றிகரமாக சேமிக்கப்பட்டது!');
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Failed to save record. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit / சமர்ப்பிக்கவும்';
+            }
+        });
+
+        // Show message
+        async function showMessage(recordId) {
+            try {
+                const response = await fetch(`${API_URL}/message/${recordId}`);
+                if (!response.ok) return;
+                
+                const message = await response.json();
+                const messageBox = document.createElement('div');
+                messageBox.className = 'message-box';
+                messageBox.innerHTML = `
+                    <h3>Message / செய்தி:</h3>
+                    <p><strong>English:</strong> ${message.english}</p>
+                    <p><strong>Tamil:</strong> ${message.tamil}</p>
+                `;
+                
+                const container = document.getElementById('entryMessage');
+                container.innerHTML = '';
+                container.appendChild(messageBox);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Load and display records
+        async function loadRecords() {
+            const loading = document.getElementById('recordsLoading');
+            const table = document.getElementById('recordsTable');
+            
+            loading.innerHTML = 'Loading records...';
+            table.style.display = 'none';
+            
+            await fetchRecords();
+            displayRecords();
+            
+            loading.innerHTML = '';
+            table.style.display = 'table';
+        }
+
+        // Display records
+        function displayRecords() {
+            const tbody = document.getElementById('recordsBody');
+            tbody.innerHTML = '';
+            
+            let filtered = allRecords;
+            if (filterShiftType !== 'all') {
+                filtered = allRecords.filter(r => r.shift === filterShiftType);
+            }
+            
+            filtered.reverse().forEach(record => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${record.date}</td>
+                    <td>${record.shift === 'morning' ? '🌅 Morning' : '🌆 Evening'}</td>
+                    <td>${record.name}</td>
+                    <td>${record.phone}</td>
+                    <td>${record.quantity} ml</td>
+                    <td>₹${record.amount}</td>
+                    <td class="action-btns">
+                        <button class="btn btn-secondary" onclick="viewMessage(${record.id})">Message</button>
+                        <button class="btn btn-danger" onclick="deleteRecord(${record.id})">Delete</button>
+                    </td>
+                `;
+            });
+        }
+
+        // Search records
+        function searchRecords() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#recordsBody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(search) ? '' : 'none';
+            });
+        }
+
+        // View message
+        async function viewMessage(id) {
+            await showMessage(id);
+            showTab('entry');
+            document.querySelector('.tab[onclick*="entry"]').classList.add('active');
+        }
+
+        // Delete record
+        async function deleteRecord(id) {
+            if (!confirm('Are you sure you want to delete this record? / இந்த பதிவை நீக்க விரும்புகிறீர்களா?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/records/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) throw new Error('Failed to delete record');
+                
+                showSuccess('Record deleted successfully!');
+                await loadRecords();
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Failed to delete record. Please try again.');
+            }
+        }
+
+        // Load stats
+        async function loadStats() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            try {
+                let url = `${API_URL}/stats`;
+                if (startDate && endDate) {
+                    url += `?startDate=${startDate}&endDate=${endDate}`;
+                }
+                
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Failed to fetch stats');
+                
+                const stats = await response.json();
+                displayStats(stats);
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Failed to load statistics.');
+            }
+        }
+
+        // Display stats
+        function displayStats(stats) {
+            const container = document.getElementById('statsContainer');
+            container.innerHTML = `
+                <div class="stat-card">
+                    <h3>${(stats.totalQuantity / 1000).toFixed(2)}</h3>
+                    <p>Total Liters / மொத்த லிட்டர்</p>
+                </div>
+                <div class="stat-card">
+                    <h3>₹${stats.totalAmount.toFixed(2)}</h3>
+                    <p>Total Amount / மொத்த தொகை</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${stats.morningRecords}</h3>
+                    <p>Morning Entries / காலை பதிவுகள்</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${stats.eveningRecords}</h3>
+                    <p>Evening Entries / மாலை பதிவுகள்</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${stats.uniqueCustomers}</h3>
+                    <p>Unique Customers / வாடிக்கையாளர்கள்</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${stats.totalRecords}</h3>
+                    <p>Total Records / மொத்த பதிவுகள்</p>
+                </div>
+            `;
+        }
+
+        // Generate report
+        function generateReport() {
+            loadStats();
+        }
+
+        // Download CSV
+        function downloadCSV() {
+            window.open(`${API_URL}/export/csv`, '_blank');
+        }
+
+        // Load customers
+        async function loadCustomers() {
+            try {
+                const response = await fetch(`${API_URL}/customers`);
+                if (!response.ok) throw new Error('Failed to fetch customers');
+                
+                const customers = await response.json();
+                const select = document.getElementById('customerSelect');
+                
+                select.innerHTML = '<option value="">-- Select --</option>';
+                customers.forEach(customer => {
+                    const option = document.createElement('option');
+                    option.value = customer.phone;
+                    option.textContent = `${customer.name} (${customer.phone})`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Failed to load customers.');
+            }
+        }
+
+        // Show customer attendance
+        async function showCustomerAttendance() {
+            const phone = document.getElementById('customerSelect').value;
+            const container = document.getElementById('attendanceDetails');
+            
+            if (!phone) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/attendance/${phone}`);
+                if (!response.ok) throw new Error('Failed to fetch attendance');
+                
+                const data = await response.json();
+                
+                container.innerHTML = `
+                    <div class="message-box">
+                        <h3>Customer Summary / வாடிக்கையாளர் சுருக்கம்</h3>
+                        <p><strong>Name / பெயர்:</strong> ${data.name}</p>
+                        <p><strong>Phone / தொலைபேசி:</strong> ${data.phone}</p>
+                        <p><strong>Total Visits / மொத்த வருகைகள்:</strong> ${data.totalVisits}</p>
+                        <p><strong>Total Quantity / மொத்த அளவு:</strong> ${(data.totalQuantity / 1000).toFixed(2)} liters</p>
+                        <p><strong>Total Amount / மொத்த தொகை:</strong> ₹${data.totalAmount.toFixed(2)}</p>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Shift</th>
+                                <th>Quantity(ml)</th>
+                                <th>Amount(₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.records.map(r => `
+                                <tr>
+                                    <td>${r.date}</td>
+                                    <td>${r.time}</td>
+                                    <td>${r.shift === 'morning' ? 'Morning' : 'Evening'}</td>
+                                    <td>${r.quantity} ml</td>
+                                    <td>₹${r.amount}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Failed to load attendance data.');
+            }
+        }
+
+        // Helper functions
+        function showError(message) {
+            const div = document.createElement('div');
+            div.className = 'error';
+            div.textContent = message;
+            document.querySelector('.tab-content.active').prepend(div);
+            setTimeout(() => div.remove(), 5000);
+        }
+
+        function showSuccess(message) {
+            const div = document.createElement('div');
+            div.className = 'success';
+            div.textContent = message;
+            document.querySelector('.tab-content.active').prepend(div);
+            setTimeout(() => div.remove(), 3000);
+        }
+
+        // Set default dates
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('startDate').value = today;
+        document.getElementById('endDate').value = today;
+
+        // Load initial data
+        fetchRecords();
+    </script>
+</body>
+</html>
