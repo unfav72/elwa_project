@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Suggestions - ELWA | Tech X Espadas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="ai-background"></div>
+    
+    <header class="header">
+        <div class="menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="ELWA Logo" class="logo">
+    </header>
+    
+    <nav class="side-menu">
+        <a href="{{ url_for('home') }}" class="menu-item">🏠 Home</a>
+        <a href="{{ url_for('profile') }}" class="menu-item">📋 Profile</a>
+        <a href="{{ url_for('ai_suggestions') }}" class="menu-item active">🤖 AI Suggestions</a>
+        <a href="{{ url_for('my_learning') }}" class="menu-item">📚 My Learning</a>
+        <a href="{{ url_for('quiz') }}" class="menu-item">📝 Quiz Retake</a>
+        <a href="{{ url_for('learning_content') }}" class="menu-item">💻 Learning Content</a>
+        <a href="{{ url_for('leaderboard') }}" class="menu-item">🏆 Leaderboard</a>
+        <a href="{{ url_for('logout') }}" class="menu-item" style="margin-top: 2rem; border-color: var(--danger-red); color: var(--danger-red);">🚪 Logout</a>
+    </nav>
+    
+    <main class="main-content">
+        <div style="max-width: 1000px; margin: 0 auto;">
+            <div class="card">
+                <h1 class="card-title">🤖 AI-Powered Recommendations</h1>
+                <p style="color: var(--text-muted); font-size: 1.1rem; margin-top: 1rem;">
+                    Personalized learning path based on your quiz performance
+                </p>
+            </div>
+            
+            {% if recommendation %}
+            <div class="card">
+                <div style="text-align: center; padding: 2rem 0; border-bottom: 2px solid rgba(212, 175, 55, 0.2);">
+                    <div style="font-size: 5rem; color: var(--primary-gold); margin-bottom: 1rem;">
+                        {{ recommendation.percentage|round|int }}%
+                    </div>
+                    <div class="badge badge-{{ recommendation.level }}" style="font-size: 1.2rem; padding: 0.5rem 1.5rem;">
+                        {{ recommendation.level_name }} Level
+                    </div>
+                    <div style="margin-top: 1rem; color: var(--text-muted);">
+                        Score: {{ recommendation.score }}/{{ recommendation.total }}
+                    </div>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(157, 78, 221, 0.1)); padding: 2rem; border-radius: 12px; margin-top: 2rem;">
+                    <h3 style="color: var(--accent-blue); margin-bottom: 1rem; font-family: var(--font-display);">
+                        💡 AI Analysis
+                    </h3>
+                    <p style="color: var(--text-light); font-size: 1.1rem; line-height: 1.6;">
+                        {{ recommendation.message }}
+                    </p>
+                    <div style="margin-top: 1rem;">
+                        <strong style="color: var(--primary-gold);">Recommended Content Type:</strong>
+                        <span style="color: var(--text-light);"> {{ recommendation.content_type }}</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem;">
+                    <h3 style="color: var(--primary-gold); font-family: var(--font-display); margin-bottom: 1rem;">
+                        🎯 Focus Areas
+                    </h3>
+                    <div style="display: grid; gap: 1rem;">
+                        {% for area in recommendation.focus_areas %}
+                        <div style="background: rgba(212, 175, 55, 0.1); padding: 1rem 1.5rem; border-radius: 10px; border-left: 4px solid var(--primary-gold);">
+                            {{ area }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem;">
+                    <h3 style="color: var(--accent-blue); font-family: var(--font-display); margin-bottom: 1rem;">
+                        📚 Suggested Learning Topics
+                    </h3>
+                    <div style="display: grid; gap: 1rem;">
+                        {% for topic in recommendation.suggested_topics %}
+                        <div style="background: rgba(0, 212, 255, 0.1); padding: 1rem 1.5rem; border-radius: 10px; border-left: 4px solid var(--accent-blue); display: flex; align-items: center;">
+                            <span style="font-size: 1.5rem; margin-right: 1rem;">✓</span>
+                            <span>{{ topic }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem;">
+                    <h3 style="color: var(--accent-purple); font-family: var(--font-display); margin-bottom: 1rem;">
+                        🎓 Recommended Practice
+                    </h3>
+                    <div style="background: rgba(157, 78, 221, 0.1); padding: 1.5rem; border-radius: 10px; border: 2px solid rgba(157, 78, 221, 0.3);">
+                        <p style="color: var(--text-light); font-size: 1.1rem;">
+                            {{ recommendation.practice_exercises }}
+                        </p>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
+                    <a href="{{ url_for('learning_content') }}" class="btn btn-primary">
+                        Start Learning
+                    </a>
+                    <a href="{{ url_for('quiz') }}" class="btn btn-secondary">
+                        Retake Quiz
+                    </a>
+                </div>
+            </div>
+            
+            <!-- AI-Enhanced Recommendations (if available) -->
+            {% if recommendation.get('ai_insights') %}
+            <div class="card">
+                <h2 class="card-title">🤖 AI-Powered Insights</h2>
+                <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                    Enhanced recommendations powered by Claude AI
+                </p>
+                
+                {% set ai = recommendation.ai_insights %}
+                
+                {% if ai.learning_path %}
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="color: var(--accent-blue); font-family: var(--font-display); margin-bottom: 1rem;">
+                        🎯 Your Personalized Learning Path
+                    </h3>
+                    <div style="background: rgba(0, 212, 255, 0.1); padding: 1.5rem; border-radius: 10px; border-left: 4px solid var(--accent-blue);">
+                        {% if ai.learning_path is string %}
+                            <p style="color: var(--text-light); white-space: pre-line;">{{ ai.learning_path }}</p>
+                        {% else %}
+                            <ul style="color: var(--text-light); padding-left: 1.5rem; line-height: 1.8;">
+                                {% for step in ai.learning_path %}
+                                <li>{{ step }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if ai.focus_concepts %}
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="color: var(--primary-gold); font-family: var(--font-display); margin-bottom: 1rem;">
+                        💡 Key Concepts to Master
+                    </h3>
+                    <div style="background: rgba(212, 175, 55, 0.1); padding: 1.5rem; border-radius: 10px; border-left: 4px solid var(--primary-gold);">
+                        {% if ai.focus_concepts is string %}
+                            <p style="color: var(--text-light); white-space: pre-line;">{{ ai.focus_concepts }}</p>
+                        {% else %}
+                            <ul style="color: var(--text-light); padding-left: 1.5rem; line-height: 1.8;">
+                                {% for concept in ai.focus_concepts %}
+                                <li>{{ concept }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if ai.project_idea %}
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="color: var(--accent-purple); font-family: var(--font-display); margin-bottom: 1rem;">
+                        🚀 Recommended Project
+                    </h3>
+                    <div style="background: rgba(157, 78, 221, 0.1); padding: 1.5rem; border-radius: 10px; border-left: 4px solid var(--accent-purple);">
+                        <p style="color: var(--text-light); line-height: 1.8;">{{ ai.project_idea }}</p>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if ai.motivation %}
+                <div style="margin-bottom: 1rem;">
+                    <h3 style="color: var(--success-green); font-family: var(--font-display); margin-bottom: 1rem;">
+                        ⭐ Motivational Message
+                    </h3>
+                    <div style="background: rgba(0, 255, 136, 0.1); padding: 1.5rem; border-radius: 10px; border-left: 4px solid var(--success-green);">
+                        <p style="color: var(--text-light); line-height: 1.8; font-style: italic;">{{ ai.motivation }}</p>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if ai.ai_advice %}
+                <div style="margin-bottom: 1rem;">
+                    <h3 style="color: var(--accent-blue); font-family: var(--font-display); margin-bottom: 1rem;">
+                        🧠 AI Advice
+                    </h3>
+                    <div style="background: rgba(0, 212, 255, 0.1); padding: 1.5rem; border-radius: 10px; border: 2px solid rgba(0, 212, 255, 0.3);">
+                        <p style="color: var(--text-light); line-height: 1.8; white-space: pre-line;">{{ ai.ai_advice }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            {% if attempts %}
+            <div class="card">
+                <h2 class="card-title">Quiz History</h2>
+                <div style="margin-top: 1.5rem; overflow-x: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Score</th>
+                                <th>Percentage</th>
+                                <th>Level</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for attempt in attempts[-5:]|reverse %}
+                            <tr>
+                                <td>{{ attempt.date[:10] }}</td>
+                                <td>{{ attempt.score }}/{{ attempt.total }}</td>
+                                <td>{{ attempt.percentage|round|int }}%</td>
+                                <td>
+                                    <span class="badge badge-{{ attempt.level.lower() }}">
+                                        {{ attempt.level }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% else %}
+            <div class="card">
+                <div style="text-align: center; padding: 3rem;">
+                    <div style="font-size: 5rem; margin-bottom: 1rem;">📝</div>
+                    <h2 style="color: var(--primary-gold); font-family: var(--font-display); margin-bottom: 1rem;">
+                        No Quiz Results Yet
+                    </h2>
+                    <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 2rem;">
+                        Take the assessment quiz to get AI-powered personalized recommendations
+                    </p>
+                    <a href="{{ url_for('quiz') }}" class="btn btn-primary">
+                        Take Quiz Now
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+    
+    <div class="ai-tutor-btn">🤖</div>
+    <div class="ai-tutor-popup">
+        <div class="tutor-header">
+            <h3>AI Tutor</h3>
+            <button class="tutor-close">&times;</button>
+        </div>
+        <div class="tutor-messages">
+            <div class="tutor-message ai">Hello! I'm your AI tutor. Ask me about your learning recommendations!</div>
+        </div>
+        <div class="tutor-input-container">
+            <input type="text" class="tutor-input" placeholder="Ask me anything...">
+            <button class="tutor-send">Send</button>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

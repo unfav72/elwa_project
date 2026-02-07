@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - ELWA | Tech X Espadas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="ai-background"></div>
+    
+    <header class="header">
+        <div class="menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="ELWA Logo" class="logo">
+    </header>
+    
+    <nav class="side-menu">
+        <a href="{{ url_for('home') }}" class="menu-item">🏠 Home</a>
+        <a href="{{ url_for('profile') }}" class="menu-item active">📋 Profile</a>
+        <a href="{{ url_for('ai_suggestions') }}" class="menu-item">🤖 AI Suggestions</a>
+        <a href="{{ url_for('my_learning') }}" class="menu-item">📚 My Learning</a>
+        <a href="{{ url_for('quiz') }}" class="menu-item">📝 Quiz Retake</a>
+        <a href="{{ url_for('learning_content') }}" class="menu-item">💻 Learning Content</a>
+        <a href="{{ url_for('leaderboard') }}" class="menu-item">🏆 Leaderboard</a>
+        <a href="{{ url_for('logout') }}" class="menu-item" style="margin-top: 2rem; border-color: var(--danger-red); color: var(--danger-red);">🚪 Logout</a>
+    </nav>
+    
+    <main class="main-content">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div class="card">
+                <h1 class="card-title">My Profile</h1>
+                <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                    Update your personal information
+                </p>
+                
+                <form id="profile-form" onsubmit="updateProfile(event)">
+                    <div class="form-group">
+                        <label class="form-label" for="name">Full Name</label>
+                        <input type="text" id="name" class="form-input" 
+                               value="{{ user_data.get('full_name', '') }}" 
+                               placeholder="Enter your full name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="education">Educational Status</label>
+                        <select id="education" class="form-input" required>
+                            <option value="">Select your education level</option>
+                            <option value="High School" {% if user_data.get('education') == 'High School' %}selected{% endif %}>High School</option>
+                            <option value="Undergraduate" {% if user_data.get('education') == 'Undergraduate' %}selected{% endif %}>Undergraduate</option>
+                            <option value="Graduate" {% if user_data.get('education') == 'Graduate' %}selected{% endif %}>Graduate</option>
+                            <option value="Postgraduate" {% if user_data.get('education') == 'Postgraduate' %}selected{% endif %}>Postgraduate</option>
+                            <option value="Professional" {% if user_data.get('education') == 'Professional' %}selected{% endif %}>Professional</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="dob">Date of Birth</label>
+                        <input type="date" id="dob" class="form-input" 
+                               value="{{ user_data.get('dob', '') }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="mobile">Mobile Number</label>
+                        <input type="tel" id="mobile" class="form-input" 
+                               value="{{ user_data.get('mobile', '') }}" 
+                               placeholder="+91 98765 43210" 
+                               pattern="[+]?[0-9]{10,15}" required>
+                    </div>
+                    
+                    <div style="margin-top: 2rem;">
+                        <button type="submit" class="btn btn-primary">
+                            Save Changes
+                        </button>
+                        <a href="{{ url_for('home') }}" class="btn btn-outline" style="margin-left: 1rem;">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">Account Information</h2>
+                <div style="margin-top: 1.5rem;">
+                    <div style="display: grid; gap: 1rem;">
+                        <div style="padding: 1rem; background: rgba(0, 0, 0, 0.2); border-radius: 10px;">
+                            <div style="color: var(--text-muted); font-size: 0.85rem;">Username</div>
+                            <div style="color: var(--text-light); font-size: 1.1rem; margin-top: 0.3rem;">{{ username }}</div>
+                        </div>
+                        <div style="padding: 1rem; background: rgba(0, 0, 0, 0.2); border-radius: 10px;">
+                            <div style="color: var(--text-muted); font-size: 0.85rem;">Account Created</div>
+                            <div style="color: var(--text-light); font-size: 1.1rem; margin-top: 0.3rem;">
+                                {{ user_data.get('created_at', 'N/A')[:10] }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <div class="ai-tutor-btn">🤖</div>
+    <div class="ai-tutor-popup">
+        <div class="tutor-header">
+            <h3>AI Tutor</h3>
+            <button class="tutor-close">&times;</button>
+        </div>
+        <div class="tutor-messages">
+            <div class="tutor-message ai">Hello! I'm your AI tutor. Ask me anything about Python programming!</div>
+        </div>
+        <div class="tutor-input-container">
+            <input type="text" class="tutor-input" placeholder="Ask me anything...">
+            <button class="tutor-send">Send</button>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

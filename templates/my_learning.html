@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Learning - ELWA | Tech X Espadas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="ai-background"></div>
+    
+    <header class="header">
+        <div class="menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="ELWA Logo" class="logo">
+    </header>
+    
+    <nav class="side-menu">
+        <a href="{{ url_for('home') }}" class="menu-item">🏠 Home</a>
+        <a href="{{ url_for('profile') }}" class="menu-item">📋 Profile</a>
+        <a href="{{ url_for('ai_suggestions') }}" class="menu-item">🤖 AI Suggestions</a>
+        <a href="{{ url_for('my_learning') }}" class="menu-item active">📚 My Learning</a>
+        <a href="{{ url_for('quiz') }}" class="menu-item">📝 Quiz Retake</a>
+        <a href="{{ url_for('learning_content') }}" class="menu-item">💻 Learning Content</a>
+        <a href="{{ url_for('leaderboard') }}" class="menu-item">🏆 Leaderboard</a>
+        <a href="{{ url_for('logout') }}" class="menu-item" style="margin-top: 2rem; border-color: var(--danger-red); color: var(--danger-red);">🚪 Logout</a>
+    </nav>
+    
+    <main class="main-content">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <div class="card">
+                <h1 class="card-title">My Learning Journey</h1>
+                <p style="color: var(--text-muted); font-size: 1.1rem; margin-top: 1rem;">
+                    Track your progress and achievements
+                </p>
+            </div>
+            
+            <!-- Statistics -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                <div class="card">
+                    <div style="text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📚</div>
+                        <div style="font-family: var(--font-display); font-size: 2.5rem; color: var(--primary-gold); margin-bottom: 0.5rem;">
+                            {{ progress.get('completed_topics', [])|length }}
+                        </div>
+                        <div style="color: var(--text-muted);">Topics Completed</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div style="text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🔥</div>
+                        <div style="font-family: var(--font-display); font-size: 2.5rem; color: var(--warning-orange); margin-bottom: 0.5rem;">
+                            {{ progress.get('streak_days', 0) }}
+                        </div>
+                        <div style="color: var(--text-muted);">Day Streak</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div style="text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">⏱️</div>
+                        <div style="font-family: var(--font-display); font-size: 2.5rem; color: var(--accent-blue); margin-bottom: 0.5rem;">
+                            {{ progress.get('total_time', 0) }}h
+                        </div>
+                        <div style="color: var(--text-muted);">Time Invested</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div style="text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📝</div>
+                        <div style="font-family: var(--font-display); font-size: 2.5rem; color: var(--accent-purple); margin-bottom: 0.5rem;">
+                            {{ attempts|length }}
+                        </div>
+                        <div style="color: var(--text-muted);">Quizzes Taken</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Progress Overview -->
+            <div class="card">
+                <h2 class="card-title">Overall Progress</h2>
+                
+                {% set total_topics = 30 %}
+                {% set completed = progress.get('completed_topics', [])|length %}
+                {% set percentage = (completed / total_topics * 100)|round|int %}
+                
+                <div style="margin-top: 2rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                        <span style="font-family: var(--font-display); color: var(--primary-gold);">Python Mastery</span>
+                        <span style="font-family: var(--font-mono); color: var(--accent-blue);">{{ completed }}/{{ total_topics }} Topics</span>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar" data-progress="{{ percentage }}">
+                            <span class="progress-text">{{ percentage }}%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem; text-align: center;">
+                    <a href="{{ url_for('learning_content') }}" class="btn btn-primary">
+                        Continue Learning
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="card">
+                <h2 class="card-title">Recent Completed Topics</h2>
+                
+                {% if progress.get('completed_topics', []) %}
+                <div style="margin-top: 1.5rem;">
+                    <div style="display: grid; gap: 1rem;">
+                        {% for topic_id in progress.get('completed_topics', [])[-10:]|reverse %}
+                        <div style="background: rgba(0, 255, 136, 0.1); padding: 1rem 1.5rem; border-radius: 10px; border-left: 4px solid var(--success-green); display: flex; align-items: center; gap: 1rem;">
+                            <span style="font-size: 1.5rem;">✓</span>
+                            <span style="text-transform: capitalize;">{{ topic_id.replace('_', ' ') }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% else %}
+                <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    <p>No completed topics yet. Start learning to track your progress!</p>
+                    <a href="{{ url_for('learning_content') }}" class="btn btn-secondary" style="margin-top: 1rem;">
+                        Browse Content
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Quiz Performance -->
+            {% if attempts %}
+            <div class="card">
+                <h2 class="card-title">Quiz Performance History</h2>
+                
+                <div style="margin-top: 1.5rem; overflow-x: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Score</th>
+                                <th>Percentage</th>
+                                <th>Level</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for attempt in attempts|reverse %}
+                            <tr>
+                                <td>{{ attempt.date[:16] }}</td>
+                                <td>{{ attempt.score }}/{{ attempt.total }}</td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 1rem;">
+                                        <div style="flex: 1; height: 8px; background: rgba(0, 0, 0, 0.3); border-radius: 4px; overflow: hidden;">
+                                            <div style="height: 100%; width: {{ attempt.percentage }}%; background: linear-gradient(90deg, var(--primary-gold), var(--accent-blue)); border-radius: 4px;"></div>
+                                        </div>
+                                        <span>{{ attempt.percentage|round|int }}%</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-{{ attempt.level.lower() }}">
+                                        {{ attempt.level }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div style="margin-top: 2rem; text-align: center;">
+                    <a href="{{ url_for('quiz') }}" class="btn btn-secondary">
+                        Take Another Quiz
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+    
+    <div class="ai-tutor-btn">🤖</div>
+    <div class="ai-tutor-popup">
+        <div class="tutor-header">
+            <h3>AI Tutor</h3>
+            <button class="tutor-close">&times;</button>
+        </div>
+        <div class="tutor-messages">
+            <div class="tutor-message ai">Hello! I'm your AI tutor. How can I help you today?</div>
+        </div>
+        <div class="tutor-input-container">
+            <input type="text" class="tutor-input" placeholder="Ask me anything...">
+            <button class="tutor-send">Send</button>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

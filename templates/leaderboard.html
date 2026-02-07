@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - ELWA | Tech X Espadas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="ai-background"></div>
+    
+    <header class="header">
+        <div class="menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="ELWA Logo" class="logo">
+    </header>
+    
+    <nav class="side-menu">
+        <a href="{{ url_for('home') }}" class="menu-item">🏠 Home</a>
+        <a href="{{ url_for('profile') }}" class="menu-item">📋 Profile</a>
+        <a href="{{ url_for('ai_suggestions') }}" class="menu-item">🤖 AI Suggestions</a>
+        <a href="{{ url_for('my_learning') }}" class="menu-item">📚 My Learning</a>
+        <a href="{{ url_for('quiz') }}" class="menu-item">📝 Quiz Retake</a>
+        <a href="{{ url_for('learning_content') }}" class="menu-item">💻 Learning Content</a>
+        <a href="{{ url_for('leaderboard') }}" class="menu-item active">🏆 Leaderboard</a>
+        <a href="{{ url_for('logout') }}" class="menu-item" style="margin-top: 2rem; border-color: var(--danger-red); color: var(--danger-red);">🚪 Logout</a>
+    </nav>
+    
+    <main class="main-content">
+        <div style="max-width: 1000px; margin: 0 auto;">
+            <div class="card">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">🏆</div>
+                    <h1 class="card-title">Leaderboard</h1>
+                    <p style="color: var(--text-muted); font-size: 1.1rem; margin-top: 1rem;">
+                        Compete with other learners and track your ranking
+                    </p>
+                </div>
+            </div>
+            
+            {% if leaderboard %}
+            <div class="card">
+                <div style="overflow-x: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">Rank</th>
+                                <th>Username</th>
+                                <th>Total Score</th>
+                                <th>Quizzes Taken</th>
+                                <th>Average Score</th>
+                                <th>Streak</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user_id, data in leaderboard %}
+                            <tr {% if user_id == current_user %}style="background: rgba(212, 175, 55, 0.2); border-left: 4px solid var(--primary-gold);"{% endif %}>
+                                <td>
+                                    <div style="display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: 1.2rem;">
+                                        {% if loop.index == 1 %}
+                                            <span style="color: #FFD700; font-size: 1.5rem;">🥇</span>
+                                        {% elif loop.index == 2 %}
+                                            <span style="color: #C0C0C0; font-size: 1.5rem;">🥈</span>
+                                        {% elif loop.index == 3 %}
+                                            <span style="color: #CD7F32; font-size: 1.5rem;">🥉</span>
+                                        {% else %}
+                                            {{ loop.index }}
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <span style="font-weight: 600; color: var(--text-light);">
+                                            {{ data.username }}
+                                        </span>
+                                        {% if user_id == current_user %}
+                                            <span class="badge badge-beginner" style="font-size: 0.7rem;">You</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="font-family: var(--font-mono); color: var(--primary-gold); font-weight: 700;">
+                                        {{ data.total_score }}
+                                    </div>
+                                </td>
+                                <td>{{ data.quizzes_taken }}</td>
+                                <td>
+                                    {% if data.quizzes_taken > 0 %}
+                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <div style="flex: 1; height: 8px; background: rgba(0, 0, 0, 0.3); border-radius: 4px; overflow: hidden; max-width: 100px;">
+                                                {% set avg = (data.total_score / data.quizzes_taken / 10 * 100)|round|int %}
+                                                <div style="height: 100%; width: {{ avg }}%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); border-radius: 4px;"></div>
+                                            </div>
+                                            <span style="font-family: var(--font-mono); color: var(--accent-blue);">
+                                                {{ (data.total_score / data.quizzes_taken)|round(1) }}/10
+                                            </span>
+                                        </div>
+                                    {% else %}
+                                        <span style="color: var(--text-muted);">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if data.streak > 0 %}
+                                        <div style="display: flex; align-items: center; gap: 0.3rem; color: var(--warning-orange);">
+                                            <span style="font-size: 1.2rem;">🔥</span>
+                                            <span style="font-weight: 600;">{{ data.streak }}</span>
+                                        </div>
+                                    {% else %}
+                                        <span style="color: var(--text-muted);">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(0, 212, 255, 0.1); border-radius: 12px; border: 2px solid rgba(0, 212, 255, 0.3);">
+                    <h3 style="color: var(--accent-blue); font-family: var(--font-display); margin-bottom: 1rem;">
+                        📊 How Rankings Work
+                    </h3>
+                    <ul style="color: var(--text-light); line-height: 1.8; padding-left: 1.5rem;">
+                        <li>Rankings are based on total quiz scores</li>
+                        <li>Each correct answer adds 1 point to your total score</li>
+                        <li>Take more quizzes to improve your ranking</li>
+                        <li>Maintain streaks by learning consistently</li>
+                        <li>Challenge yourself to reach the top!</li>
+                    </ul>
+                </div>
+                
+                <div style="margin-top: 2rem; text-align: center;">
+                    <a href="{{ url_for('quiz') }}" class="btn btn-primary">
+                        Take Quiz to Improve Ranking
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <div class="card">
+                <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                    <p style="font-size: 1.1rem;">No leaderboard data yet. Be the first to take a quiz!</p>
+                    <a href="{{ url_for('quiz') }}" class="btn btn-primary" style="margin-top: 1.5rem;">
+                        Start Quiz
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+    
+    <div class="ai-tutor-btn">🤖</div>
+    <div class="ai-tutor-popup">
+        <div class="tutor-header">
+            <h3>AI Tutor</h3>
+            <button class="tutor-close">&times;</button>
+        </div>
+        <div class="tutor-messages">
+            <div class="tutor-message ai">Hello! Want to improve your leaderboard ranking? Ask me for tips!</div>
+        </div>
+        <div class="tutor-input-container">
+            <input type="text" class="tutor-input" placeholder="Ask me anything...">
+            <button class="tutor-send">Send</button>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Content - ELWA | Tech X Espadas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="ai-background"></div>
+    
+    <header class="header">
+        <div class="menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="ELWA Logo" class="logo">
+    </header>
+    
+    <nav class="side-menu">
+        <a href="{{ url_for('home') }}" class="menu-item">🏠 Home</a>
+        <a href="{{ url_for('profile') }}" class="menu-item">📋 Profile</a>
+        <a href="{{ url_for('ai_suggestions') }}" class="menu-item">🤖 AI Suggestions</a>
+        <a href="{{ url_for('my_learning') }}" class="menu-item">📚 My Learning</a>
+        <a href="{{ url_for('quiz') }}" class="menu-item">📝 Quiz Retake</a>
+        <a href="{{ url_for('learning_content') }}" class="menu-item active">💻 Learning Content</a>
+        <a href="{{ url_for('leaderboard') }}" class="menu-item">🏆 Leaderboard</a>
+        <a href="{{ url_for('logout') }}" class="menu-item" style="margin-top: 2rem; border-color: var(--danger-red); color: var(--danger-red);">🚪 Logout</a>
+    </nav>
+    
+    <main class="main-content">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <div class="card">
+                <h1 class="card-title">Python Learning Content</h1>
+                <p style="color: var(--text-muted); font-size: 1.1rem; margin-top: 1rem;">
+                    Comprehensive Python programming curriculum from basics to advanced domains
+                </p>
+            </div>
+            
+            {% for category_key, category in content.items() %}
+            <div class="card">
+                <h2 class="card-title" style="font-size: 1.5rem; margin-bottom: 1.5rem;">
+                    {{ category.title }}
+                </h2>
+                
+                <div style="display: grid; gap: 1rem;">
+                    {% for topic in category.topics %}
+                    <div style="background: rgba(0, 0, 0, 0.2); padding: 1.5rem; border-radius: 12px; border: 2px solid rgba(212, 175, 55, 0.2); transition: all 0.3s ease; margin-bottom: 2rem;"
+                         id="topic-{{ topic.id }}"
+                         onmouseover="this.style.borderColor='var(--primary-gold)'; this.style.background='rgba(212, 175, 55, 0.1)'"
+                         onmouseout="this.style.borderColor='rgba(212, 175, 55, 0.2)'; this.style.background='rgba(0, 0, 0, 0.2)'">
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 1rem;">
+                            <div style="flex: 1; min-width: 250px;">
+                                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                                    <h3 style="color: var(--text-light); font-size: 1.3rem; margin: 0;">
+                                        {{ topic.name }}
+                                    </h3>
+                                    {% if topic.id in completed_topics %}
+                                    <span style="color: var(--success-green); font-size: 1.5rem;">✓</span>
+                                    {% endif %}
+                                </div>
+                                <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.3rem;">
+                                    ⏱️ Duration: {{ topic.duration }}
+                                </div>
+                                {% if topic.description %}
+                                <p style="color: var(--text-muted); margin-top: 1rem; line-height: 1.5;">
+                                    {{ topic.description }}
+                                </p>
+                                {% endif %}
+                            </div>
+                            
+                            <div style="display: flex; gap: 1rem; align-items: center;">
+                                <button onclick="toggleDetails('{{ topic.id }}')" 
+                                        class="btn btn-secondary" 
+                                        style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                                    View Details
+                                </button>
+                                {% if topic.id not in completed_topics %}
+                                <button onclick="markTopicComplete('{{ topic.id }}')" 
+                                        class="btn btn-primary" 
+                                        style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                                    Mark Complete
+                                </button>
+                                {% else %}
+                                <span class="badge badge-beginner">Completed</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Detailed content (initially hidden) -->
+                        <div id="details-{{ topic.id }}" style="display: none; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(212, 175, 55, 0.2);">
+                            {% if topic.video %}
+                            <div style="margin-bottom: 2rem;">
+                                <h4 style="color: var(--accent-blue); margin-bottom: 1rem;">📺 Video Tutorial</h4>
+                                <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px;">
+                                    <iframe src="{{ topic.video }}" 
+                                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; border-radius: 12px;"
+                                            allowfullscreen></iframe>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if topic.content %}
+                            <div style="margin-bottom: 2rem;">
+                                <h4 style="color: var(--primary-gold); margin-bottom: 1rem;">📖 Explanation</h4>
+                                <div style="background: rgba(0, 212, 255, 0.05); padding: 1.5rem; border-radius: 10px; border-left: 4px solid var(--accent-blue);">
+                                    {% if '<' in topic.content %}
+                                        {{ topic.content|safe }}
+                                    {% else %}
+                                        <p style="color: var(--text-light); line-height: 1.6;">{{ topic.content }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if topic.code %}
+                            <div style="margin-bottom: 1rem;">
+                                <h4 style="color: var(--accent-purple); margin-bottom: 1rem;">💻 Code Examples</h4>
+                                <pre style="background: rgba(0, 0, 0, 0.5); padding: 1.5rem; border-radius: 10px; overflow-x: auto; border: 2px solid rgba(157, 78, 221, 0.3);"><code style="color: #00ff88; font-family: var(--font-mono); font-size: 0.9rem; line-height: 1.5;">{{ topic.code }}</code></pre>
+                                <button onclick="copyCode('{{ topic.id }}')" class="btn btn-outline" style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">
+                                    📋 Copy Code
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+    
+    <div class="ai-tutor-btn">🤖</div>
+    <div class="ai-tutor-popup">
+        <div class="tutor-header">
+            <h3>AI Tutor</h3>
+            <button class="tutor-close">&times;</button>
+        </div>
+        <div class="tutor-messages">
+            <div class="tutor-message ai">Hello! Need help understanding any topic? Ask me!</div>
+        </div>
+        <div class="tutor-input-container">
+            <input type="text" class="tutor-input" placeholder="Ask me anything...">
+            <button class="tutor-send">Send</button>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        function toggleDetails(topicId) {
+            const details = document.getElementById('details-' + topicId);
+            const button = event.target;
+            
+            if (details.style.display === 'none' || details.style.display === '') {
+                details.style.display = 'block';
+                button.textContent = 'Hide Details';
+                // Scroll to topic
+                document.getElementById('topic-' + topicId).scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                details.style.display = 'none';
+                button.textContent = 'View Details';
+            }
+        }
+        
+        function copyCode(topicId) {
+            const codeBlock = document.querySelector(`#details-${topicId} code`);
+            const textArea = document.createElement('textarea');
+            textArea.value = codeBlock.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            // Show feedback
+            event.target.textContent = '✓ Copied!';
+            setTimeout(() => {
+                event.target.textContent = '📋 Copy Code';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

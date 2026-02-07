@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz - ELWA | Tech X Espadas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="ai-background"></div>
+    
+    <header class="header">
+        <div class="menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="ELWA Logo" class="logo">
+    </header>
+    
+    <nav class="side-menu">
+        <a href="{{ url_for('home') }}" class="menu-item">🏠 Home</a>
+        <a href="{{ url_for('profile') }}" class="menu-item">📋 Profile</a>
+        <a href="{{ url_for('ai_suggestions') }}" class="menu-item">🤖 AI Suggestions</a>
+        <a href="{{ url_for('my_learning') }}" class="menu-item">📚 My Learning</a>
+        <a href="{{ url_for('quiz') }}" class="menu-item active">📝 Quiz Retake</a>
+        <a href="{{ url_for('learning_content') }}" class="menu-item">💻 Learning Content</a>
+        <a href="{{ url_for('leaderboard') }}" class="menu-item">🏆 Leaderboard</a>
+        <a href="{{ url_for('logout') }}" class="menu-item" style="margin-top: 2rem; border-color: var(--danger-red); color: var(--danger-red);">🚪 Logout</a>
+    </nav>
+    
+    <main class="main-content">
+        <div style="max-width: 900px; margin: 0 auto;">
+            <div class="card">
+                <h1 class="card-title">Assessment Quiz</h1>
+                <p style="color: var(--text-muted); font-size: 1.1rem; margin-top: 1rem;">
+                    Take this quiz to get AI-powered personalized learning recommendations
+                </p>
+                
+                <div style="background: rgba(0, 212, 255, 0.1); padding: 1.5rem; border-radius: 12px; border: 2px solid rgba(0, 212, 255, 0.3); margin-top: 2rem;">
+                    <h3 style="color: var(--accent-blue); margin-bottom: 1rem;">📋 Quiz Instructions</h3>
+                    <ul style="color: var(--text-light); line-height: 1.8; padding-left: 1.5rem;">
+                        <li>The quiz contains 10 randomized questions</li>
+                        <li>Questions cover Python basics, data structures, and programming concepts</li>
+                        <li>Each question has 4 options - select the correct one</li>
+                        <li>Questions are shuffled every time you take the quiz</li>
+                        <li>Your score will determine your skill level: Beginner, Intermediate, or Advanced</li>
+                        <li>Based on your performance, AI will recommend personalized learning content</li>
+                    </ul>
+                </div>
+                
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button onclick="startQuiz()" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                        Start Quiz
+                    </button>
+                </div>
+            </div>
+            
+            <div id="quiz-container" style="margin-top: 2rem;">
+                <!-- Quiz questions will be loaded here -->
+            </div>
+        </div>
+    </main>
+    
+    <div class="ai-tutor-btn">🤖</div>
+    <div class="ai-tutor-popup">
+        <div class="tutor-header">
+            <h3>AI Tutor</h3>
+            <button class="tutor-close">&times;</button>
+        </div>
+        <div class="tutor-messages">
+            <div class="tutor-message ai">Hello! I'm your AI tutor. Need help with any quiz question? Ask me!</div>
+        </div>
+        <div class="tutor-input-container">
+            <input type="text" class="tutor-input" placeholder="Ask me anything...">
+            <button class="tutor-send">Send</button>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
